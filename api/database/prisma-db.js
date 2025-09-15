@@ -36,6 +36,10 @@ class PrismaDatabase {
     });
   }
 
+  async getVendorById(id) {
+    return await this.getVendor(id);
+  }
+
   async getAllVendors() {
     return await this.prisma.vendor.findMany({
       include: {
@@ -116,6 +120,38 @@ class PrismaDatabase {
     });
   }
 
+  async getProcurementRequestById(id) {
+    return await this.getProcurementRequest(id);
+  }
+
+  async getProcurementRequestsByBuyer(buyerId) {
+    return await this.prisma.procurementRequest.findMany({
+      where: { buyerId },
+      include: {
+        buyer: true,
+        quotes: {
+          include: {
+            vendor: true
+          }
+        }
+      }
+    });
+  }
+
+  async getProcurementRequestsByStatus(status) {
+    return await this.prisma.procurementRequest.findMany({
+      where: { status },
+      include: {
+        buyer: true,
+        quotes: {
+          include: {
+            vendor: true
+          }
+        }
+      }
+    });
+  }
+
   async getAllProcurementRequests() {
     return await this.prisma.procurementRequest.findMany({
       include: {
@@ -147,6 +183,12 @@ class PrismaDatabase {
     return await this.prisma.procurementRequest.update({
       where: { id },
       data: { status }
+    });
+  }
+
+  async deleteProcurementRequest(id) {
+    return await this.prisma.procurementRequest.delete({
+      where: { id }
     });
   }
 
@@ -266,6 +308,10 @@ class PrismaDatabase {
         timestamp: 'asc'
       }
     });
+  }
+
+  async getNegotiationMessages(quoteId) {
+    return await this.getNegotiationsByQuote(quoteId);
   }
 
   // Order operations

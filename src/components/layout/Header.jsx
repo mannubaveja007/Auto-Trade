@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Menu, Bell, Search, Plus } from 'lucide-react';
+import { Menu, Bell, Search, Plus, Sun, Moon } from 'lucide-react';
 import Button from '../ui/Button';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export function Header({ onMenuClick, activeTab, onCreateNew }) {
   const getHeaderTitle = (tab) => {
