@@ -35,8 +35,11 @@ export function ProcurementList({ onRequestSelected }) {
   const loadRequests = async () => {
     try {
       setLoading(true);
-      const data = await getProcurementRequests();
-      setRequests(data);
+      const { data, error } = await getProcurementRequests();
+      if (error) {
+        throw new Error(error.message);
+      }
+      setRequests(data || []);
     } catch (err) {
       toast.error('Failed to load procurement requests');
     } finally {
@@ -52,7 +55,10 @@ export function ProcurementList({ onRequestSelected }) {
     }
 
     try {
-      await deleteProcurementRequest(requestId);
+      const { error } = await deleteProcurementRequest(requestId);
+      if (error) {
+        throw new Error(error.message);
+      }
       setRequests(requests.filter(request => request.id !== requestId));
       toast.success('Request deleted successfully');
     } catch (err) {

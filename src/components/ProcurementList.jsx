@@ -14,8 +14,11 @@ function ProcurementList({ onRequestSelected }) {
   const loadRequests = async () => {
     try {
       setLoading(true);
-      const data = await getProcurementRequests();
-      setRequests(data);
+      const { data, error } = await getProcurementRequests();
+      if (error) {
+        throw new Error(error.message);
+      }
+      setRequests(data || []);
     } catch (err) {
       console.error('Failed to load requests:', err);
       setError('Failed to load procurement requests');

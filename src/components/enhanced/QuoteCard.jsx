@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createOrder } from '../../services/api';
 import { Card, CardHeader, CardBody, CardFooter } from '../ui/Card';
@@ -21,34 +21,46 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export function QuoteCard({ quote, isSelected, onSelect, onOrderCreated, isBestPrice = false }) {
+const QuoteCard = memo(function QuoteCard({ quote, isSelected, onSelect, onOrderCreated, isBestPrice = false }) {
   const [accepting, setAccepting] = useState(false);
 
-  const handleAcceptQuote = async () => {
+  const orderData = useMemo(() => ({
+    requestId: quote.requestId,
+    quoteId: quote.id,
+    buyerId: quote.request.buyerId,
+    vendorId: quote.vendorId,
+    finalPrice: quote.totalPrice,
+    deliveryDate: quote.deliveryDate,
+    paymentTerms: quote.paymentTerms
+  }), [quote]);
+
+  const handleAcceptQuote = useCallback(async () => {
     setAccepting(true);
     try {
-      const orderData = {
-        requestId: quote.requestId,
-        quoteId: quote.id,
-        buyerId: quote.request.buyerId,
-        vendorId: quote.vendorId,
-        finalPrice: quote.totalPrice,
-        deliveryDate: quote.deliveryDate,
-        paymentTerms: quote.paymentTerms
-      };
+      const result = await createOrder(orderData);
 
-      await createOrder(orderData);
+      if (result.error) {
+        toast.error(result.error.message || 'Failed to place order');
+        return;
+      }
+
       toast.success('Order placed successfully! 🎉');
 
       if (onOrderCreated) {
         onOrderCreated(quote);
       }
     } catch (err) {
-      toast.error('Failed to place order');
+      toast.error(err.userMessage || 'Failed to place order');
     } finally {
       setAccepting(false);
     }
-  };
+  }, [orderData, quote, onOrderCreated]);
+
+  const handleSelect = useCallback(() => {
+    if (onSelect) {
+      onSelect(quote);
+    }
+  }, [quote, onSelect]);
 
   const getStatusIcon = () => {
     switch (quote.status) {
@@ -137,7 +149,7 @@ export function QuoteCard({ quote, isSelected, onSelect, onOrderCreated, isBestP
             ? 'ring-2 ring-green-500 ring-opacity-50 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/10 dark:to-blue-900/10'
             : ''
         }`}
-        onClick={onSelect}
+        onClick={handleSelect}
       >
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -318,6 +330,6 @@ export function QuoteCard({ quote, isSelected, onSelect, onOrderCreated, isBestP
       </Card>
     </motion.div>
   );
-}
+});
 
 export default QuoteCard;
