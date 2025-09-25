@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web3 Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .status { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Web3 MetaMask Connection Test</h1>
+
+    <div>
+        <button onclick="checkMetaMask()">1. Check MetaMask</button>
+        <button onclick="connectWallet()">2. Connect Wallet</button>
+        <button onclick="testSigning()">3. Test Signing</button>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        let account = null;
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.innerHTML = message;
+        }
+
+        function checkMetaMask() {
+            if (typeof window.ethereum !== 'undefined') {
+                updateStatus('✅ MetaMask is installed!', 'success');
+                console.log('MetaMask detected:', window.ethereum);
+            } else {
+                updateStatus('❌ MetaMask not found. Please install MetaMask extension.', 'error');
+            }
+        }
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not installed');
+                }
+
+                updateStatus('🔄 Requesting wallet connection...', 'info');
+
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts',
+                });
+
+                if (accounts.length > 0) {
+                    account = accounts[0];
+                    updateStatus(`✅ Connected to wallet: ${account}`, 'success');
+                } else {
+                    updateStatus('❌ No accounts found', 'error');
+                }
+            } catch (error) {
+                console.error('Connection failed:', error);
+                updateStatus(`❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSigning() {
+            try {
+                if (!account) {
+                    throw new Error('Please connect wallet first');
+                }
+
+                updateStatus('🔄 Requesting signature...', 'info');
+
+                const message = 'Hello from Web3 test!';
+                const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [message, account],
+                });
+
+                updateStatus(`✅ Message signed successfully!<br>Signature: ${signature}`, 'success');
+            } catch (error) {
+                console.error('Signing failed:', error);
+                updateStatus(`❌ Signing failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Check on load
+        window.onload = function() {
+            checkMetaMask();
+        };
+    </script>
+</body>
+</html>

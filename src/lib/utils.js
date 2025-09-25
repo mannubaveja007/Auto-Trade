@@ -55,3 +55,29 @@ export function getUrgencyColor(urgency) {
   };
   return colors[urgency?.toLowerCase()] || 'text-gray-600 dark:text-gray-400';
 }
+
+// Web3 Authentication Utilities
+export function storeJWT(token) {
+  localStorage.setItem('web3_jwt', token);
+}
+
+export function getJWT() {
+  return localStorage.getItem('web3_jwt');
+}
+
+export function removeJWT() {
+  localStorage.removeItem('web3_jwt');
+}
+
+export function storeSessionKey(sessionKey) {
+  localStorage.setItem('web3_session_key', JSON.stringify(sessionKey));
+}
+
+export function getSessionKey() {
+  const stored = localStorage.getItem('web3_session_key');
+  return stored ? JSON.parse(stored) : null;
+}
+
+export function removeSessionKey() {
+  localStorage.removeItem('web3_session_key');
+}

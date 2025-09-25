@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export function QuotesView({ requestId, request }) {
+export function QuotesView({ requestId, request, onPayment, isAuthenticated, isTransferring }) {
   const [quotes, setQuotes] = useState([]);
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -265,6 +265,9 @@ export function QuotesView({ requestId, request }) {
                           onSelect={() => setSelectedQuote(quote)}
                           onOrderCreated={handleOrderCreated}
                           isBestPrice={bestPriceQuote?.id === quote.id}
+                          onPayment={onPayment}
+                          isAuthenticated={isAuthenticated}
+                          isTransferring={isTransferring}
                         />
                       </motion.div>
                     ))}
@@ -313,6 +316,9 @@ export function QuotesView({ requestId, request }) {
                           isSelected={selectedQuote?.id === quote.id}
                           onSelect={() => setSelectedQuote(quote)}
                           onOrderCreated={handleOrderCreated}
+                          onPayment={onPayment}
+                          isAuthenticated={isAuthenticated}
+                          isTransferring={isTransferring}
                         />
                       </motion.div>
                     ))}

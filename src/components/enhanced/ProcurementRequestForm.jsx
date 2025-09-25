@@ -33,11 +33,18 @@ export function ProcurementRequestForm({ onRequestCreated, onClose }) {
   const loadBuyers = async () => {
     try {
       const buyersData = await getBuyers();
-      setBuyers(buyersData);
-      if (buyersData.length > 0) {
-        setFormData(prev => ({ ...prev, buyerId: buyersData[0].id }));
+      if (Array.isArray(buyersData)) {
+        setBuyers(buyersData);
+        if (buyersData.length > 0) {
+          setFormData(prev => ({ ...prev, buyerId: buyersData[0].id }));
+        }
+      } else {
+        console.error('Buyers data is not an array:', buyersData);
+        setBuyers([]);
       }
     } catch (error) {
+      console.error('Failed to load buyers:', error);
+      setBuyers([]);
       toast.error('Failed to load company data');
     }
   };
@@ -206,7 +213,7 @@ export function ProcurementRequestForm({ onRequestCreated, onClose }) {
                   required
                 >
                   <option value="">Select Company</option>
-                  {buyers.map(buyer => (
+                  {Array.isArray(buyers) && buyers.map(buyer => (
                     <option key={buyer.id} value={buyer.id}>
                       {buyer.companyName}
                     </option>

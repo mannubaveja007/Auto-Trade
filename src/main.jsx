@@ -4,10 +4,24 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 
+import {
+  config,
+  queryClient,
+  RainbowKitProvider,
+  WagmiProvider,
+  QueryClientProvider
+} from './lib/rainbow.js'
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </React.StrictMode>,
 )

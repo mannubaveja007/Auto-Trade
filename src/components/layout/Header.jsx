@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Menu, Bell, Search, Plus, Sun, Moon } from 'lucide-react';
+import { Menu, Bell, Search, Plus, Sun, Moon, Wallet, CheckCircle } from 'lucide-react';
 import Button from '../ui/Button';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-export function Header({ onMenuClick, activeTab, onCreateNew }) {
+export function Header({ onMenuClick, activeTab, onCreateNew, account, isAuthenticated, balance, onConnectWallet, onAuthenticate, chainInfo, onSwitchChain, currentChain }) {
   const getHeaderTitle = (tab) => {
     const titles = {
       procurement: 'Procurement Requests',
@@ -68,6 +69,33 @@ export function Header({ onMenuClick, activeTab, onCreateNew }) {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Rainbow Kit Connect Button */}
+          <div className="flex items-center space-x-2">
+            <ConnectButton />
+
+            {/* Authentication Status & Balance */}
+            {account && (
+              <div className="hidden sm:flex items-center space-x-3 ml-3">
+                {!isAuthenticated ? (
+                  <Button
+                    onClick={onAuthenticate}
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <span>Authenticate</span>
+                  </Button>
+                ) : (
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {balance} USDC
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Search */}
           <div className="hidden md:block relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
