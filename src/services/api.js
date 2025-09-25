@@ -119,6 +119,18 @@ export const getOrders = async (params = {}) => {
 };
 
 export const createOrder = async (orderData) => {
+  const { client, candidateState } = channelData;
+    try {
+      await client.checkpointChannel({
+        channelId : "0xda62427f8d9843de166dafab041adb050df8daaab78e56933b02a6b4098cb961",
+        candidateState
+      });
+      console.log(' Channel checkpoint executed successfully');
+    } catch (err) {
+      console.error('Failed to checkpoint channel:', err);
+      result.checkpointError = err;
+    }
+  
   return apiCall(() => api.post('/orders', orderData));
 };
 
